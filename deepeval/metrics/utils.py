@@ -1,4 +1,5 @@
 import json
+import os
 from typing import Any, Optional, List, Union, Tuple
 from deepeval.models import GPTModel, DeepEvalBaseLLM
 
@@ -11,8 +12,8 @@ from deepeval.test_case import (
 
 
 def validate_conversational_test_case(
-    test_case: ConversationalTestCase,
-    metric: BaseMetric,
+        test_case: ConversationalTestCase,
+        metric: BaseMetric,
 ) -> LLMTestCase:
     if len(test_case.messages) == 0:
         error_str = "'messages' in conversational test case cannot be empty."
@@ -23,9 +24,9 @@ def validate_conversational_test_case(
 
 
 def check_llm_test_case_params(
-    test_case: LLMTestCase,
-    test_case_params: List[LLMTestCaseParams],
-    metric: BaseMetric,
+        test_case: LLMTestCase,
+        test_case_params: List[LLMTestCaseParams],
+        metric: BaseMetric,
 ):
     missing_params = []
     for param in test_case_params:
@@ -39,7 +40,7 @@ def check_llm_test_case_params(
             missing_params_str = " and ".join(missing_params)
         else:
             missing_params_str = (
-                ", ".join(missing_params[:-1]) + ", and " + missing_params[-1]
+                    ", ".join(missing_params[:-1]) + ", and " + missing_params[-1]
             )
 
         error_str = f"{missing_params_str} cannot be None for the '{metric.__name__}' metric"
@@ -48,7 +49,7 @@ def check_llm_test_case_params(
 
 
 def trimAndLoadJson(
-    input_string: str, metric: Optional[BaseMetric] = None
+        input_string: str, metric: Optional[BaseMetric] = None
 ) -> Any:
     start = input_string.find("{")
     end = input_string.rfind("}") + 1
@@ -70,8 +71,19 @@ def trimAndLoadJson(
         raise Exception(f"An unexpected error occurred: {str(e)}")
 
 
+def is_env_var_set(var_name):
+    value = os.getenv(var_name)
+    if value is None:
+        print(f"The environment variable '{var_name}' is not set or is null.")
+        return False
+    else:
+        print(f"The environment variable '{var_name}' is set to: {value}")
+        return True
+
+
+
 def initialize_model(
-    model: Optional[Union[str, DeepEvalBaseLLM, GPTModel]] = None,
+        model: Optional[Union[str, DeepEvalBaseLLM, GPTModel]] = None,
 ) -> Tuple[DeepEvalBaseLLM, bool]:
     """
     Returns a tuple of (initialized DeepEvalBaseLLM, using_native_model boolean)

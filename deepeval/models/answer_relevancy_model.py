@@ -18,6 +18,7 @@ class AnswerRelevancyModel(DeepEvalBaseModel):
         super().__init__(model_name=model_name)
 
     def load_model(self):
+        print("load arm model ***********************************\n*******")
         """Loads a model, that will be responsible for scoring.
 
         Returns:

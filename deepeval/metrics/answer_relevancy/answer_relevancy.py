@@ -8,6 +8,7 @@ from deepeval.metrics.utils import (
     trimAndLoadJson,
     check_llm_test_case_params,
     initialize_model,
+    is_env_var_set,
     print_intermediate_steps,
 )
 from deepeval.test_case import (
@@ -15,6 +16,7 @@ from deepeval.test_case import (
     LLMTestCaseParams,
     ConversationalTestCase,
 )
+from deepeval.models.answer_relevancy_model import AnswerRelevancyModel
 from deepeval.metrics import BaseMetric
 from deepeval.models import DeepEvalBaseLLM
 from deepeval.metrics.answer_relevancy.template import AnswerRelevancyTemplate
@@ -64,6 +66,9 @@ class AnswerRelevancyMetric(BaseMetric):
             ContextVar(generate_uuid(), default=None)
         )
         self.threshold = 1 if strict_mode else threshold
+        if not is_env_var_set("OPENAI_API_KEY"):
+            model = AnswerRelevancyModel()
+
         self.model, self.using_native_model = initialize_model(model)
         self.evaluation_model = self.model.get_model_name()
         self.include_reason = include_reason
