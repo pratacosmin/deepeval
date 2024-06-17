@@ -51,13 +51,13 @@ class AnswerRelevancyMetric(BaseMetric):
         self._verdicts.set(value)
 
     def __init__(
-        self,
-        threshold: float = 0.5,
-        model: Optional[Union[str, DeepEvalBaseLLM]] = None,
-        include_reason: bool = True,
-        async_mode: bool = True,
-        strict_mode: bool = False,
-        verbose_mode: bool = False,
+            self,
+            threshold: float = 0.5,
+            model: Optional[Union[str, DeepEvalBaseLLM]] = None,
+            include_reason: bool = True,
+            async_mode: bool = True,
+            strict_mode: bool = False,
+            verbose_mode: bool = False,
     ):
         self._statements: ContextVar[Optional[List[str]]] = ContextVar(
             generate_uuid(), default=None
@@ -68,12 +68,10 @@ class AnswerRelevancyMetric(BaseMetric):
         self.threshold = 1 if strict_mode else threshold
         if not is_env_var_set("OPENAI_API_KEY"):
             model = AnswerRelevancyModel()
-            print("set Model ")
-            print(type(model))
-            if isinstance(model, DeepEvalBaseLLM):
-                print("model  is an instance of DeepEvalBaseLLM")
-
-        self.model, self.using_native_model = initialize_model(model)
+            self.model = model
+            self.using_native_model = False
+        else:
+            self.model, self.using_native_model = initialize_model(model)
         self.evaluation_model = self.model.get_model_name()
         self.include_reason = include_reason
         self.async_mode = async_mode
@@ -81,7 +79,7 @@ class AnswerRelevancyMetric(BaseMetric):
         self.verbose_mode = verbose_mode
 
     def measure(
-        self, test_case: Union[LLMTestCase, ConversationalTestCase]
+            self, test_case: Union[LLMTestCase, ConversationalTestCase]
     ) -> float:
         if isinstance(test_case, ConversationalTestCase):
             test_case = validate_conversational_test_case(test_case, self)
@@ -119,9 +117,9 @@ class AnswerRelevancyMetric(BaseMetric):
                 return self.score
 
     async def a_measure(
-        self,
-        test_case: Union[LLMTestCase, ConversationalTestCase],
-        _show_indicator: bool = True,
+            self,
+            test_case: Union[LLMTestCase, ConversationalTestCase],
+            _show_indicator: bool = True,
     ) -> float:
         if isinstance(test_case, ConversationalTestCase):
             test_case = validate_conversational_test_case(test_case, self)
@@ -129,7 +127,7 @@ class AnswerRelevancyMetric(BaseMetric):
 
         self.evaluation_cost = 0 if self.using_native_model else None
         with metric_progress_indicator(
-            self, async_mode=True, _show_indicator=_show_indicator
+                self, async_mode=True, _show_indicator=_show_indicator
         ):
             self.statements: List[str] = await self._a_generate_statements(
                 test_case.actual_output
@@ -151,7 +149,7 @@ class AnswerRelevancyMetric(BaseMetric):
             return self.score
 
     async def _measure_async(
-        self, test_case: Union[LLMTestCase, ConversationalTestCase]
+            self, test_case: Union[LLMTestCase, ConversationalTestCase]
     ):
         await self.a_measure(test_case, _show_indicator=False)
         return (
@@ -209,7 +207,7 @@ class AnswerRelevancyMetric(BaseMetric):
         return data["reason"]
 
     async def _a_generate_verdicts(
-        self, input: str
+            self, input: str
     ) -> List[AnswerRelvancyVerdict]:
         if len(self.statements) == 0:
             return []
@@ -245,8 +243,8 @@ class AnswerRelevancyMetric(BaseMetric):
         return verdicts
 
     async def _a_generate_statements(
-        self,
-        actual_output: str,
+            self,
+            actual_output: str,
     ) -> List[str]:
         prompt = AnswerRelevancyTemplate.generate_statements(
             actual_output=actual_output,
@@ -260,8 +258,8 @@ class AnswerRelevancyMetric(BaseMetric):
         return data["statements"]
 
     def _generate_statements(
-        self,
-        actual_output: str,
+            self,
+            actual_output: str,
     ) -> List[str]:
         prompt = AnswerRelevancyTemplate.generate_statements(
             actual_output=actual_output,
