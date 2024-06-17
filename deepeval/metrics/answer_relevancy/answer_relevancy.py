@@ -72,7 +72,10 @@ class AnswerRelevancyMetric(BaseMetric):
             self.using_native_model = False
         else:
             self.model, self.using_native_model = initialize_model(model)
-        self.evaluation_model = self.model.get_model_name()
+        try:
+            self.evaluation_model = self.model.get_model_name()
+        except Exception as e:
+            pass
         self.include_reason = include_reason
         self.async_mode = async_mode
         self.strict_mode = strict_mode
