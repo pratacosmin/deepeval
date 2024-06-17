@@ -68,6 +68,8 @@ class AnswerRelevancyMetric(BaseMetric):
         self.threshold = 1 if strict_mode else threshold
         if not is_env_var_set("OPENAI_API_KEY"):
             model = AnswerRelevancyModel()
+            print("set Model ")
+            print(type(model))
 
         self.model, self.using_native_model = initialize_model(model)
         self.evaluation_model = self.model.get_model_name()
