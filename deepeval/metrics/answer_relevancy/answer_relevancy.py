@@ -70,6 +70,8 @@ class AnswerRelevancyMetric(BaseMetric):
             model = AnswerRelevancyModel()
             print("set Model ")
             print(type(model))
+            if isinstance(model, DeepEvalBaseLLM):
+                print("model  is an instance of DeepEvalBaseLLM")
 
         self.model, self.using_native_model = initialize_model(model)
         self.evaluation_model = self.model.get_model_name()
