@@ -58,6 +58,7 @@ class AnswerRelevancyMetric(BaseMetric):
             async_mode: bool = True,
             strict_mode: bool = False,
             verbose_mode: bool = False,
+            using_native_model: bool = False
     ):
         self._statements: ContextVar[Optional[List[str]]] = ContextVar(
             generate_uuid(), default=None
@@ -66,16 +67,8 @@ class AnswerRelevancyMetric(BaseMetric):
             ContextVar(generate_uuid(), default=None)
         )
         self.threshold = 1 if strict_mode else threshold
-        if not is_env_var_set("OPENAI_API_KEY"):
-            model = AnswerRelevancyModel()
-            self.model = model
-            self.using_native_model = False
-        else:
-            self.model, self.using_native_model = initialize_model(model)
-        try:
-            self.evaluation_model = self.model.get_model_name()
-        except Exception as e:
-            pass
+        self.model = model
+        self.using_native_model = using_native_model
         self.include_reason = include_reason
         self.async_mode = async_mode
         self.strict_mode = strict_mode
