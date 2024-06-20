@@ -1,7 +1,7 @@
 import json
 import os
 from typing import Any, Optional, List, Union, Tuple
-from deepeval.models import GPTModel, DeepEvalBaseLLM
+from deepeval.models import GPTModel, DeepEvalBaseLLM, DeepEvalBaseModel
 
 from deepeval.metrics import BaseMetric
 from deepeval.test_case import (
@@ -81,7 +81,6 @@ def is_env_var_set(var_name):
         return True
 
 
-
 def initialize_model(
         model: Optional[Union[str, DeepEvalBaseLLM, GPTModel]] = None,
 ) -> Tuple[DeepEvalBaseLLM, bool]:
@@ -93,6 +92,8 @@ def initialize_model(
         return model, True
     # If model is a DeepEvalBaseLLM but not a GPTModel, we can not assume it is a native model
     if isinstance(model, DeepEvalBaseLLM):
+        return model, False
+    if isinstance(model, DeepEvalBaseModel):
         return model, False
     # Otherwise (the model is a string or None), we initialize a GPTModel and use as a native model
     return GPTModel(model=model), True
